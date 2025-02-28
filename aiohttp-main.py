@@ -14,7 +14,7 @@ async def send_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaph
             return response.status
 
 async def main() -> int:
-    semaphore = asyncio.Semaphore(20)
+    semaphore = asyncio.Semaphore(50)
     async with aiohttp.ClientSession() as session:
         tasks = [asyncio.create_task(send_request(session, semaphore)) for _ in range(1,151)]
         status_codes = await asyncio.gather(*tasks)
