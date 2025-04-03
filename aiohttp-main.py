@@ -5,6 +5,8 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 import aiohttp
 import time
 from loguru import logger
+
+NUM_CONCURRENT_REQUESTS = 200
 start_time = time.perf_counter()
 
 async def send_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaphore) -> int:
@@ -16,7 +18,7 @@ async def send_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaph
             return response.status
 
 async def main() -> int:
-    semaphore = asyncio.Semaphore(200)
+    semaphore = asyncio.Semaphore(NUM_CONCURRENT_REQUESTS)
     async with aiohttp.ClientSession() as session:
         tasks = [asyncio.create_task(send_request(session, semaphore)) for _ in range(1,151)]
         status_codes = await asyncio.gather(*tasks)
