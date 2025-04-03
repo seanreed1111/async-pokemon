@@ -1,5 +1,7 @@
 # https://github.com/coderecode-com/async-await-demo
-import asyncio
+import asyncio 
+import uvloop
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 import aiohttp
 import time
 from loguru import logger
@@ -14,7 +16,7 @@ async def send_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaph
             return response.status
 
 async def main() -> int:
-    semaphore = asyncio.Semaphore(50)
+    semaphore = asyncio.Semaphore(200)
     async with aiohttp.ClientSession() as session:
         tasks = [asyncio.create_task(send_request(session, semaphore)) for _ in range(1,151)]
         status_codes = await asyncio.gather(*tasks)
